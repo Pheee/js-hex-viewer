@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.row:after {
+  display: table;
+  content: "";
+  clear: both;
+}
+
+.mono {
+  font-family: monospace;
+  float: left;
+  width: 50%;
+}

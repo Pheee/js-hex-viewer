@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <h1>JS file HEX Viewer</h1>
+    <input type="file" name="theFile" id="theFile" />
+    <button id="btn">Read & display</button>
+    <div class="row">
+      <div id="divHex" class="mono"></div>
+      <div id="divClearText" class="mono"></div>
+    </div>
+    <script>
+      function decimalToHex(d, padding) {
+        var hex = Number(d).toString(16);
+        padding =
+          typeof padding === "undefined" || padding === null
+            ? (padding = 2)
+            : padding;
+
+        while (hex.length < padding) {
+          hex = "0" + hex;
+        }
+
+        return hex.toUpperCase();
+      }
+      const btnRead = document.getElementById("btn");
+      const divHex = document.getElementById("divHex");
+      const divClearText = document.getElementById("divClearText");
+      const f = document.getElementById("theFile");
+      btnRead.addEventListener("click", () => {
+        const fileReader = new FileReader();
+        const theFile = f.files[0];
+        fileReader.onload = (ev) => {
+          console.log(ev);
+          let outputHex = "";
+          let outputClearText = "";
+          let CHUNK_SIZE = 1;
+          let currentRow = 0;
+          let rowSwitch = true;
+          for (let index = 0; index < ev.target.result.byteLength; index++) {
+            let byteView = new DataView(
+              ev.target.result,
+              index * CHUNK_SIZE,
+              CHUNK_SIZE
+            );
+            let theNumber = byteView.getUint8(0);
+            if (rowSwitch) {
+              outputHex += decimalToHex(currentRow * 32, 10) + " | ";
+              rowSwitch = false;
+            }
+            outputHex += decimalToHex(theNumber, 2) + " ";
+            outputClearText +=
+              (theNumber < 32
+                ? "."
+                : theNumber > 127
+                ? "."
+                : String.fromCharCode(theNumber)) + " ";
+            if (index > 0 && (index + 1) % 32 === 0) {
+              outputHex += "<br>";
+              outputClearText += "<br>";
+              currentRow++;
+              rowSwitch = true;
+            }
+          }
+          divHex.innerHTML = outputHex;
+          divClearText.innerHTML = outputClearText;
+        };
+        fileReader.readAsArrayBuffer(theFile);
+      });
+    </script>
+  </body>
+</html>
