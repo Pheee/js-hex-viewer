@@ -37,7 +37,12 @@
         const fileReader = new FileReader();
         const theFile = f.files[0];
         fileReader.onload = (ev) => {
-          console.log(ev);
+          if (ev.target.result.byteLength > 1048576) {
+            alert(
+              "File too large (>1mb), please choose a smaller file and try again."
+            );
+            return;
+          }
           let outputHex = "";
           let outputClearText = "";
           let CHUNK_SIZE = 1;
